@@ -23,7 +23,7 @@ export default function Table() {
       .filter((el) => el.name.toLowerCase().includes(filtered.toLowerCase()));
     let filterColumnPlanets = [];
     if (filteredComparison === 'maior que') {
-      console.log(planets);
+      // console.log(planets);
       filterColumnPlanets = nameFiltered
         .filter((e) => Number(e[filteredColumn]) > Number(filteredValue));
     }
@@ -41,13 +41,21 @@ export default function Table() {
   };
 
   const getFiltered = () => {
-    // console.log(filtered, filteredColumn, filteredComparison, filteredValue);
+    console.log(filtersCombo);
     // console.log(planets);
-    setFiltersCombo([...filtersCombo,
-      { filteredColumn, filteredComparison, filteredValue }]);
     const deleteColumn = columns.filter((e) => e !== filteredColumn);
     setColumns(deleteColumn);
+    setFiltersCombo([...filtersCombo,
+      { filteredColumn, filteredComparison, filteredValue }]);
+    setFilterColumn(deleteColumn[0]);
     valueFilter();
+  };
+
+  const deleteFilter = (event) => {
+    console.log(event);
+  };
+  const resetFilters = () => {
+
   };
 
   return (
@@ -99,6 +107,29 @@ export default function Table() {
           onClick={ getFiltered }
         >
           Filtrar
+
+        </button>
+      </div>
+      <div>
+        {filtersCombo
+          .map((e, i) => (
+            <span key={ i } data-testid="filter">
+              <p key={ i }>
+                {
+                  `${e.filteredColumn} ${e.filteredComparison} ${e.filteredValue}`
+                }
+              </p>
+              <button type="button" onClick={ deleteFilter }>
+                X
+              </button>
+            </span>
+          ))}
+        <button
+          type="button"
+          data-testid="button-remove-filters"
+          onClick={ resetFilters }
+        >
+          Remover Filtros
 
         </button>
       </div>

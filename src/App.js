@@ -8,7 +8,6 @@ function App() {
   const [planets, setPlanets] = useState([]);
   const [filtered, setFilter] = useState('');
   const [filtersCombo, setFiltersCombo] = useState([]);
-  const [filteredColumn, setFilterColumn] = useState('population');
   const [filteredComparison, setFilterComparison] = useState('maior que');
   const [filteredValue, setFilterValue] = useState('0');
   const [columns, setColumns] = useState([
@@ -18,6 +17,7 @@ function App() {
     'rotation_period',
     'surface_water',
   ]);
+  const [filteredColumn, setFilterColumn] = useState(columns[0]);
 
   const context = {
     planets,
