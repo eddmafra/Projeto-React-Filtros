@@ -11,6 +11,13 @@ function App() {
   const [filteredColumn, setFilterColumn] = useState('population');
   const [filteredComparison, setFilterComparison] = useState('maior que');
   const [filteredValue, setFilterValue] = useState('0');
+  const [columns, setColumns] = useState([
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ]);
 
   const context = {
     planets,
@@ -25,6 +32,8 @@ function App() {
     setFilterComparison,
     filteredValue,
     setFilterValue,
+    columns,
+    setColumns,
   };
 
   useEffect(() => {

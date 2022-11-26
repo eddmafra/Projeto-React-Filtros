@@ -14,7 +14,9 @@ export default function Table() {
     filteredComparison,
     setFilterComparison,
     filteredValue,
-    setFilterValue } = useContext(PlanetContext);
+    setFilterValue,
+    columns,
+    setColumns } = useContext(PlanetContext);
 
   const valueFilter = () => {
     const nameFiltered = planets
@@ -43,6 +45,8 @@ export default function Table() {
     // console.log(planets);
     setFiltersCombo([...filtersCombo,
       { filteredColumn, filteredComparison, filteredValue }]);
+    const deleteColumn = columns.filter((e) => e !== filteredColumn);
+    setColumns(deleteColumn);
     valueFilter();
   };
 
@@ -66,11 +70,9 @@ export default function Table() {
           value={ filteredColumn }
           onChange={ ({ target }) => setFilterColumn(target.value) }
         >
-          <option value="population">population</option>
-          <option value="orbital_period">orbital_period</option>
-          <option value="diameter">diameter</option>
-          <option value="rotation_period">rotation_period</option>
-          <option value="surface_water">surface_water</option>
+          {columns.map((e, i) => (
+            <option value={ e } key={ i }>{e}</option>
+          ))}
         </select>
         <select
           name="comparison-filter"
