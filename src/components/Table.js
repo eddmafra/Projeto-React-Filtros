@@ -3,27 +3,24 @@ import PlanetContext from '../context/PlanetContext';
 
 export default function Table() {
   const {
-    planets,
-    setPlanets,
-    filtersCombo,
-    setFiltersCombo,
-    filtered,
-    setFilter,
-    filteredColumn,
-    setFilterColumn,
-    filteredComparison,
-    setFilterComparison,
-    filteredValue,
-    setFilterValue,
-    columns,
-    setColumns } = useContext(PlanetContext);
+    planets, setPlanets,
+    filtersCombo, setFiltersCombo,
+    filtered, setFilter,
+    filteredColumn, setFilterColumn,
+    filteredComparison, setFilterComparison,
+    filteredValue, setFilterValue,
+    columns, setColumns,
+    originalPlanets,
+    order, setOrder,
+    orderOptions, setOrderOptions,
+    options,
+    tableTitles } = useContext(PlanetContext);
 
   const valueFilter = () => {
     const nameFiltered = planets
       .filter((el) => el.name.toLowerCase().includes(filtered.toLowerCase()));
     let filterColumnPlanets = [];
     if (filteredComparison === 'maior que') {
-      // console.log(planets);
       filterColumnPlanets = nameFiltered
         .filter((e) => Number(e[filteredColumn]) > Number(filteredValue));
     }
@@ -32,17 +29,34 @@ export default function Table() {
         .filter((e) => Number(e[filteredColumn]) < Number(filteredValue));
     }
     if (filteredComparison === 'igual a') {
-      // console.log(planets);
       filterColumnPlanets = nameFiltered
         .filter((e) => (e[filteredColumn]) === (filteredValue));
     }
-    // console.log(filterColumnPlanets);
+    setPlanets(filterColumnPlanets);
+  };
+
+  const valueFilterDelete = (remainingFilter) => {
+    console.log(remainingFilter);
+    console.log(originalPlanets);
+    let filterColumnPlanets = [];
+    remainingFilter.forEach((el) => {
+      if (el.filteredComparison === 'maior que') {
+        filterColumnPlanets = originalPlanets
+          .filter((e) => Number(e[el.filteredColumn]) > Number(el.filteredValue));
+      }
+      if (el.filteredComparison === 'menor que') {
+        filterColumnPlanets = originalPlanets
+          .filter((e) => Number(e[el.filteredColumn]) < Number(el.filteredValue));
+      }
+      if (el.filteredComparison === 'igual a') {
+        filterColumnPlanets = originalPlanets
+          .filter((e) => (e[el.filteredColumn]) === (el.filteredValue));
+      }
+    });
     setPlanets(filterColumnPlanets);
   };
 
   const getFiltered = () => {
-    console.log(filtersCombo);
-    // console.log(planets);
     const deleteColumn = columns.filter((e) => e !== filteredColumn);
     setColumns(deleteColumn);
     setFiltersCombo([...filtersCombo,
@@ -51,13 +65,39 @@ export default function Table() {
     valueFilter();
   };
 
-  const deleteFilter = (event) => {
-    console.log(event);
+  const deleteFilter = ({ target }) => {
+    const deleteFilterBtn = filtersCombo.filter((e) => e.filteredColumn !== target.value);
+    setFiltersCombo(deleteFilterBtn);
+    setColumns([target.value, ...columns]);
+    setPlanets(originalPlanets);
+    valueFilterDelete(deleteFilterBtn);
   };
   const resetFilters = () => {
-
+    setFiltersCombo([]);
+    setColumns([
+      'population',
+      'orbital_period',
+      'diameter',
+      'rotation_period',
+      'surface_water',
+    ]);
+    setPlanets(originalPlanets);
   };
-
+  const orderFilter = (value) => {
+    const orderedPlanets = planets
+      .filter((e) => e[orderOptions] !== 'unknown');
+    const unkowns = planets
+      .filter((el) => el[orderOptions] === 'unknown');
+    switch (value) {
+    case 'ASC':
+      orderedPlanets.sort((a, b) => Number(+a[orderOptions]) - Number(+b[orderOptions]));
+      break;
+    default:
+      orderedPlanets.sort((a, b) => Number(+b[orderOptions]) - Number(+a[orderOptions]));
+      break;
+    }
+    setPlanets([...orderedPlanets, ...unkowns]);
+  };
   return (
     <div>
       <div>
@@ -119,7 +159,7 @@ export default function Table() {
                   `${e.filteredColumn} ${e.filteredComparison} ${e.filteredValue}`
                 }
               </p>
-              <button type="button" onClick={ deleteFilter }>
+              <button type="button" onClick={ deleteFilter } value={ e.filteredColumn }>
                 X
               </button>
             </span>
@@ -133,22 +173,45 @@ export default function Table() {
 
         </button>
       </div>
+      <div>
+        <select
+          onChange={ ({ target }) => setOrderOptions(target.value) }
+          data-testid="column-sort"
+        >
+          { options.map((e, i) => <option key={ i } value={ e }>{e}</option>)}
+        </select>
+        <label htmlFor="ASC">
+          ASC
+          <input
+            data-testid="column-sort-input-asc"
+            type="radio"
+            name="orderRadio"
+            value="ASC"
+            onChange={ ({ target }) => setOrder(target.value) }
+          />
+        </label>
+        <label htmlFor="DESC">
+          DESC
+          <input
+            data-testid="column-sort-input-desc"
+            type="radio"
+            name="orderRadio"
+            value="DESC"
+            onChange={ ({ target }) => setOrder(target.value) }
+          />
+        </label>
+        <button
+          data-testid="column-sort-button"
+          type="button"
+          onClick={ () => { orderFilter(order); } }
+        >
+          Ordenar
+        </button>
+      </div>
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Rotation Period</th>
-            <th>Orbital Period</th>
-            <th>Diameter</th>
-            <th>Climate</th>
-            <th>Gravity</th>
-            <th>Terrain</th>
-            <th>Surface Water</th>
-            <th>Population</th>
-            <th>Films</th>
-            <th>Created</th>
-            <th>Edited</th>
-            <th>Url</th>
+            {tableTitles.map((e, i) => <th key={ i }>{e}</th>)}
           </tr>
         </thead>
         <tbody>

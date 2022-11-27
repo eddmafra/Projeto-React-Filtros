@@ -18,8 +18,31 @@ function App() {
     'surface_water',
   ]);
   const [filteredColumn, setFilterColumn] = useState(columns[0]);
+  const [originalPlanets, setOriginalPlanets] = useState([]);
+  const [order, setOrder] = useState('ASC');
+  const options = [
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water'];
+  const [orderOptions, setOrderOptions] = useState(options[0]);
+  const tableTitles = ['Name',
+    'Rotation Period',
+    'Orbital Period',
+    'Diameter',
+    'Climate',
+    'Gravity',
+    'Terrain',
+    'Surface Water',
+    'Population',
+    'Films',
+    'Created',
+    'Edited',
+    'Url'];
 
   const context = {
+    tableTitles,
     planets,
     setPlanets,
     filtersCombo,
@@ -34,12 +57,20 @@ function App() {
     setFilterValue,
     columns,
     setColumns,
+    originalPlanets,
+    setOriginalPlanets,
+    order,
+    setOrder,
+    orderOptions,
+    setOrderOptions,
+    options,
   };
 
   useEffect(() => {
     async function planetsAPI() {
       const data = await fetchPlanets();
       setPlanets(data);
+      setOriginalPlanets(data);
     }
     planetsAPI();
   }, []);
